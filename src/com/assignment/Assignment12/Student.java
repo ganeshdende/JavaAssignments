@@ -18,6 +18,10 @@ public class Student {
         this.aggregate = aggregate;
     }
 
+    public Student() {
+
+    }
+
     public int getSid() {
         return sid;
     }

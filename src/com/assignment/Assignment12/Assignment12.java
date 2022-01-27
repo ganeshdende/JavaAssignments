@@ -1,8 +1,12 @@
 package com.assignment.Assignment12;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.*;
 
 public class Assignment12 {
     public static void main(String[] args) {
@@ -24,24 +28,62 @@ public class Assignment12 {
         students.add(new Student(255, "Ali Baig", 17, "Male", "Electronic", 2018, 88.4));
         students.add(new Student(266, "Sanvi Pandey", 17, "Female", "Electric", 2019, 72.4));
         students.add(new Student(277, "Anuj Chettiar", 18, "Male", "Computer Science", 2017, 57.5));
-        Supplier<Stream<Student>> streamSupplier = () -> students.stream();
+        Supplier<Stream<Student>> streamSupplier = students::stream;
 
         //task 1
-        System.out.println("Departments in college");
+        System.out.println("TAsk1: Departments in college");
         streamSupplier.get().map(Student::getDept).distinct().forEach(System.out::println);
+        System.out.println();
 
         //task2
-        System.out.println("Names of student enrolled after 2018");
+        System.out.println("TAsk2: Names of student enrolled after 2018");
         streamSupplier.get().filter((s) -> s.getBatch() > 2018).map(student -> student.sname).forEach(System.out::println);
+        System.out.println();
+
 
         //task3
-        System.out.println("Details of Maile student in comp sci dept");
+        System.out.println("Task3 : Details of Maile student in comp sci dept");
         streamSupplier.get().filter((s) -> s.getGender().equals("Male"))
-                .filter((s) -> s.getDept().equals("Computer Science")).forEach((s) -> s.display());
+                .filter((s) -> s.getDept().equals("Computer Science")).forEach(Student::display);
+        System.out.println();
 
         //task4
 
-        System.out.println("no of male and female students:");
+        System.out.println("TAsk4 : no of male and female students:");
+        Map<String,Long> m=streamSupplier.get().collect(groupingBy(Student::getGender, counting()));
+        System.out.println(m);
+        System.out.println();
+        //TAsk5
+        System.out.println("Task 5 : Average age of boys and girls");
+        Map<String, Double> mo=streamSupplier.get().collect(groupingBy(Student::getGender,averagingDouble(Student::getAge)));
+        System.out.println(mo);
+        System.out.println();
 
+        //TAsk6
+        System.out.println("Task 6: Student details of highest percentage");
+        streamSupplier.get().max(Comparator.comparing(Student::getAggregate)).get().display();
+        System.out.println();
+
+        //Task 7
+        System.out.println("Task 7: ");
+       Map<String, Long> studentsPerDept= streamSupplier.get().collect(groupingBy(Student::getDept,counting()));
+        System.out.println(studentsPerDept);
+        System.out.println();
+
+        //TAsk 8
+        System.out.println("Task 8: Average percentage in each department");
+        Map<String ,Double> avgperDept=streamSupplier.get().collect(groupingBy(Student::getDept,averagingDouble(Student::getAggregate)));
+        System.out.println(avgperDept);
+        System.out.println();
+
+        //Task 9
+        System.out.println("Task 9: YOungest male student in Electronic dept");
+        streamSupplier.get().filter(s->s.getDept().equals("Electronic")&&s.getGender().equals("Male")).min(Comparator.comparingInt(Student::getAge)).get().display();
+        System.out.println();
+
+        //Task 10
+        System.out.println("Task 10: No of male and female in cse");
+        Map<String, Long> studentsInCSE=streamSupplier.get().filter(student -> student.getDept().equals("Computer Science")).collect(groupingBy(Student::getGender,counting()));
+        System.out.println(studentsInCSE);
     }
 }
